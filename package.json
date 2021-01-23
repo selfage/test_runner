@@ -1,0 +1,29 @@
+{
+  "name": "@selfage/test_runner",
+  "version": "1.0.0",
+  "description": "Testing framework.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/selfage/test_runner.git"
+  },
+  "keywords": [
+    "Unit test",
+    "Matcher"
+  ],
+  "author": "Yuxuan Xie <teststaybaka@gmail.com> (http://www.yuxuanxie.com)",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/selfage/test_runner/issues"
+  },
+  "homepage": "https://github.com/selfage/test_runner#readme",
+  "main": "./runner.js",
+  "types": "./runner.d.ts",
+  "devDependencies": {
+    "@selfage/tsconfig": "^1.0.3",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "commander": "^6.2.1",
+    "source-map-support": "^0.5.19"
+  }
+}
