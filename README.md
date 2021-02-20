@@ -95,3 +95,7 @@ test set `MathTest`.
 
 `node test_suite.js -s MathTest -c UnderTen` would only execute the test case
 `UnderTen` from the test set `MathTest`.
+
+## Stack trace from TypeScript source file
+
+Based on the amazing `source-map-support` package, stack traces from errors, especially when assertion failed, will be mapped back to TypeScript source files.
