@@ -4,11 +4,7 @@
 `npm install @selfage/test_runner`
 
 ## Overview
-Written in TypeScript and compiled to ES6.Provides a minimalist test runner.
-
-For every test file, import `@selfage/test_runner` to define a test set and
-multiple cases to run. Multiple test files can be imported into a single
-"test_suite.ts" file to be run together.
+Written in TypeScript and compiled to ES6. Provides a minimalist test runner, which runs one or more test sets containing one more test cases.
 
 ## Simple test
 

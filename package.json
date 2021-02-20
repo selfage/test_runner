@@ -1,7 +1,7 @@
 {
   "name": "@selfage/test_runner",
-  "version": "1.0.0",
-  "description": "Testing framework.",
+  "version": "1.0.1",
+  "description": "Just a runner to run tests.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/selfage/test_runner.git"
