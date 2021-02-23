@@ -1,14 +1,15 @@
 {
   "name": "@selfage/test_runner",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Just a runner to run tests.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/selfage/test_runner.git"
   },
   "keywords": [
-    "Unit test",
-    "Matcher"
+    "Test",
+    "Matcher",
+    "TypeScript"
   ],
   "author": "Yuxuan Xie <teststaybaka@gmail.com> (http://www.yuxuanxie.com)",
   "license": "GPL-3.0-or-later",
@@ -18,6 +19,7 @@
   "homepage": "https://github.com/selfage/test_runner#readme",
   "main": "./runner.js",
   "types": "./runner.d.ts",
+  "files": ["**/*.d.ts", "**/*.js"],
   "devDependencies": {
     "@selfage/tsconfig": "^1.0.3",
     "typescript": "^4.1.3"
