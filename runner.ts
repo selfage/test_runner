@@ -1,5 +1,5 @@
 import { Command } from "commander";
-// import "source-map-support/register";
+import "source-map-support/register";
 
 export interface TestCase {
   name: string;
