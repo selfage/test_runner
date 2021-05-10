@@ -1,4 +1,5 @@
-import { Command } from "commander";
+import { Command, ParseOptions } from "commander";
+import "@selfage/puppeteer_executor_api/argv";
 import "source-map-support/register";
 
 export interface TestCase {
@@ -25,7 +26,18 @@ class TestRunner {
     private caseName: string | undefined
   ) {}
 
-  public static create(): TestRunner {
+  public static createForNode(): TestRunner {
+    return TestRunner.create(process.argv, { from: "node" });
+  }
+
+  public static createForPuppeteer(): TestRunner {
+    return TestRunner.create(globalThis.argv, { from: "user" });
+  }
+
+  private static create(
+    argv: Array<string>,
+    options: ParseOptions
+  ): TestRunner {
     let command = new Command();
     command.option("-s, --set-name <name>", "The name of the test set.");
     command.option(
@@ -114,4 +126,5 @@ class TestRunner {
   }
 }
 
-export let TEST_RUNNER = TestRunner.create();
+export let TEST_RUNNER = TestRunner.createForNode();
+export let PUPPETEER_TEST_RUNNER = TestRunner.createForPuppeteer();

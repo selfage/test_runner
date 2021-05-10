@@ -19,12 +19,17 @@
   "homepage": "https://github.com/selfage/test_runner#readme",
   "main": "./runner.js",
   "types": "./runner.d.ts",
-  "files": ["**/*.d.ts", "**/*.js"],
+  "files": [
+    "**/*.d.ts",
+    "**/*.js"
+  ],
   "devDependencies": {
     "@selfage/tsconfig": "^1.0.3",
+    "@types/node": "^15.0.2",
     "typescript": "^4.1.3"
   },
   "dependencies": {
+    "@selfage/puppeteer_executor_api": "^1.0.1",
     "commander": "^6.2.1",
     "source-map-support": "^0.5.19"
   }
