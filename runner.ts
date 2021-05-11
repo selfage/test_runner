@@ -1,3 +1,4 @@
+import { EXIT } from "@selfage/puppeteer_executor_api";
 import { Command, ParseOptions } from "commander";
 import "@selfage/puppeteer_executor_api/argv";
 import "source-map-support/register";
@@ -14,29 +15,34 @@ export interface Environment {
 
 export interface TestSet {
   name: string;
-  cases: TestCase[];
+  cases: Array<TestCase>;
   environment?: Environment;
 }
 
-class TestRunner {
-  private prevRunPromise = Promise.resolve();
+export interface TestCaseResult {
+  name: string;
+  success: boolean;
+}
+
+export interface TestSetResult {
+  name: string;
+  cases: Array<TestCaseResult>;
+}
+
+export class TestRunner {
+  private testResults = new Array<TestSetResult>();
+  private prevRunPromise: Promise<void>;
 
   public constructor(
     private setName: string | undefined,
-    private caseName: string | undefined
+    private caseName: string | undefined,
+    private exitFn: () => void
   ) {}
 
-  public static createForNode(): TestRunner {
-    return TestRunner.create(process.argv, { from: "node" });
-  }
-
-  public static createForPuppeteer(): TestRunner {
-    return TestRunner.create(globalThis.argv, { from: "user" });
-  }
-
-  private static create(
-    argv: Array<string>,
-    options: ParseOptions
+  public static create(
+    argv = process.argv,
+    options: ParseOptions = { from: "node" },
+    exitFn: () => void = () => {}
   ): TestRunner {
     let command = new Command();
     command.option("-s, --set-name <name>", "The name of the test set.");
@@ -44,38 +50,74 @@ class TestRunner {
       "-c, --case-name <name>",
       "The name of the test case within a test set."
     );
-    command.parse();
-    return new TestRunner(command.setName, command.caseName);
+    command.parse(argv, options);
+    return new TestRunner(command.setName, command.caseName, exitFn);
+  }
+
+  public static createForPuppeteer(): TestRunner {
+    return TestRunner.create(globalThis.argv, { from: "user" }, () =>
+      console.log(EXIT)
+    );
   }
 
   public run(testSet: TestSet): void {
+    // Because we create TEST_RUNNER and PUPPETEER_TEST_RUNNER as singletons, we
+    // cannot then init the following during construction, otherwise exit
+    // function on both instances will be called.
+    if (!this.prevRunPromise) {
+      this.prevRunPromise = Promise.resolve();
+      // Because run() is designed to be called any number of times without a
+      // clear signal of when all run() has been called, we use this hack to
+      // wait for the end of the current event loop, assuming all run() calls
+      // happen synchronously.
+      setTimeout(() => this.summarizeAndExit());
+    }
+
     this.prevRunPromise = TestRunner.runAfterPrevRun(
       this.prevRunPromise,
       testSet,
       this.setName,
-      this.caseName
+      this.caseName,
+      this.testResults
     );
+  }
+
+  private async summarizeAndExit(): Promise<void> {
+    await this.prevRunPromise;
+    for (let testSetResult of this.testResults) {
+      console.log(`\n\x1b[35mTest set ${testSetResult.name} result:\x1b[0m`);
+      for (let testCaseResult of testSetResult.cases) {
+        if (testCaseResult.success) {
+          console.log(`\x1b[32m${testCaseResult.name} success!\x1b[0m`);
+        } else {
+          console.log(`\x1b[31m${testCaseResult.name} failed!\x1b[0m`);
+        }
+      }
+    }
+    this.exitFn();
   }
 
   private static async runAfterPrevRun(
     prevRunPromise: Promise<void>,
     testSet: TestSet,
     setName: string | undefined,
-    caseName: string | undefined
+    caseName: string | undefined,
+    outputTestResults: Array<TestSetResult>
   ): Promise<void> {
     await prevRunPromise;
     if (!setName || setName === testSet.name) {
       if (!caseName) {
-        await TestRunner.runTestSet(testSet);
+        await TestRunner.runTestSet(testSet, outputTestResults);
       } else {
-        await TestRunner.runTestCase(testSet, caseName);
+        await TestRunner.runTestCase(testSet, caseName, outputTestResults);
       }
     }
   }
 
   private static async runTestCase(
     testSet: TestSet,
-    caseName: string
+    caseName: string,
+    outputTestResults: Array<TestSetResult>
   ): Promise<void> {
     let testCase = testSet.cases.find((testCase): boolean => {
       return caseName === testCase.name;
@@ -93,38 +135,33 @@ class TestRunner {
     }
   }
 
-  private static async runTestSet(testSet: TestSet): Promise<void> {
-    console.log("\n\x1b[35m%s test result:\x1b[0m", testSet.name);
+  private static async runTestSet(
+    testSet: TestSet,
+    outputTestResults: Array<TestSetResult>
+  ): Promise<void> {
+    let testSetResult: TestSetResult = {
+      name: testSet.name,
+      cases: new Array<TestCaseResult>(),
+    };
+    console.log(`\x1b[34mTest set ${testSet.name} starts.\x1b[0m`);
     if (testSet.environment) {
       await testSet.environment.setUp();
     }
     for (let testCase of testSet.cases) {
-      let oldLog = console.log;
-      let oldInfo = console.info;
-      let oldWarn = console.warn;
-      let oldErr = console.error;
-      console.log = () => {};
-      console.info = () => {};
-      console.warn = () => {};
-      console.error = () => {};
-      let statusMsg: string;
+      console.log(`\x1b[33mTest case ${testCase.name} starts.\x1b[0m`);
       try {
         await testCase.execute();
-        statusMsg = `\x1b[32m${testCase.name} success!\x1b[0m`;
+        testSetResult.cases.push({ name: testCase.name, success: true });
       } catch (e) {
-        statusMsg = `\x1b[31m${testCase.name} failed!\x1b[0m`;
+        testSetResult.cases.push({ name: testCase.name, success: false });
       }
-      console.log = oldLog;
-      console.info = oldInfo;
-      console.warn = oldWarn;
-      console.error = oldErr;
-      console.log(statusMsg);
     }
     if (testSet.environment) {
       await testSet.environment.tearDown();
     }
+    outputTestResults.push(testSetResult);
   }
 }
 
-export let TEST_RUNNER = TestRunner.createForNode();
+export let TEST_RUNNER = TestRunner.create();
 export let PUPPETEER_TEST_RUNNER = TestRunner.createForPuppeteer();
