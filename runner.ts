@@ -153,6 +153,7 @@ export class TestRunner {
         await testCase.execute();
         testSetResult.cases.push({ name: testCase.name, success: true });
       } catch (e) {
+        console.error(e);
         testSetResult.cases.push({ name: testCase.name, success: false });
       }
     }
