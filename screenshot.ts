@@ -1,11 +1,9 @@
 import { DELETE, SCREENSHOT } from "@selfage/puppeteer_executor_api";
 
 export async function screenshot(imagePath: string, waitMs = 0): Promise<void> {
-  let fullPath = __dirname + imagePath;
-
-  console.log(DELETE + fullPath);
+  console.log(DELETE + imagePath);
   while (true) {
-    let response = await fetch(fullPath);
+    let response = await fetch(imagePath);
     if (response.status === 404) {
       break;
     }
@@ -14,9 +12,9 @@ export async function screenshot(imagePath: string, waitMs = 0): Promise<void> {
   // Hack to wait for full image rendering.
   await new Promise<void>((resolve) => setTimeout(resolve, waitMs));
 
-  console.log(SCREENSHOT + fullPath);
+  console.log(SCREENSHOT + imagePath);
   while (true) {
-    let response = await fetch(fullPath);
+    let response = await fetch(imagePath);
     if (response.ok) {
       break;
     }

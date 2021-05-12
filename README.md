@@ -117,10 +117,12 @@ async function main() {
   await screenshot('/golden/test_image.png');
   // Or add 500 ms wait time for your UI to be rendered completely.
   // await screenshot('/golden/test_image.png', 500);
+  // Or write to a file relative to the directory of this file.
+  // await screenshot(__dirname + '/golden/test_image.png', 500);
 }
 ```
 
-The url path maps to a relative file path. See `@selfage/bundler_cli` for hwo to specify root directory.
+The url path maps to a relative file path. See `@selfage/bundler_cli` for how to specify root directory.
 
 Unfortunately, unlike in Node environment, there is no handy way to wait for file operations in Puppeteer executor environment. `screenshot()` uses polling strategy by fetching the image until the temporary local server responds OK status.
 
