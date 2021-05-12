@@ -1,7 +1,7 @@
 {
   "name": "@selfage/test_runner",
-  "version": "1.1.0",
-  "description": "Lets each test file be executable on it own.",
+  "version": "1.1.1",
+  "description": "Let each test file be executable on its own.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/selfage/test_runner.git"
@@ -9,6 +9,7 @@
   "keywords": [
     "Test",
     "Matcher",
+    "Browser",
     "Puppeteer",
     "Environment",
     "TypeScript"
