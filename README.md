@@ -4,7 +4,8 @@
 `npm install @selfage/test_runner`
 
 ## Overview
-Written in TypeScript and compiled to ES6 with inline source map & source. See [@selfage/tsconfig](https://www.npmjs.com/package/@selfage/tsconfig) for full compiler options. Provides a test runner that makes each test file itself an exectuable file which runs one or more test cases.
+
+Written in TypeScript and compiled to ES6 with inline source map & source. See [@selfage/tsconfig](https://www.npmjs.com/package/@selfage/tsconfig) for full compiler options. Provides a simple test runner that makes each test file itself an exectuable file and is capable to be combined into one large test suite file.
 
 ## Test runner for Node environment
 

@@ -1,7 +1,7 @@
 {
   "name": "@selfage/test_runner",
-  "version": "1.0.7",
-  "description": "Run tests in Node environment.",
+  "version": "1.1.0",
+  "description": "Lets each test file be executable on it own.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/selfage/test_runner.git"
@@ -9,6 +9,8 @@
   "keywords": [
     "Test",
     "Matcher",
+    "Puppeteer",
+    "Environment",
     "TypeScript"
   ],
   "author": "Yuxuan Xie <teststaybaka@gmail.com> (http://www.yuxuanxie.com)",
