@@ -4,9 +4,11 @@
 `npm install @selfage/test_runner`
 
 ## Overview
-Written in TypeScript and compiled to ES6 with inline source map & source. See [@selfage/tsconfig](https://www.npmjs.com/package/@selfage/tsconfig) for full compiler options. Provides a minimalist test runner, which runs one or more test sets containing one more test cases in Node environment.
+Written in TypeScript and compiled to ES6 with inline source map & source. See [@selfage/tsconfig](https://www.npmjs.com/package/@selfage/tsconfig) for full compiler options. Provides a test runner that makes each test file itself an exectuable file which runs one or more test cases.
 
-## Simple test
+## Test runner for Node environment
+
+### Simple test
 
 ```TypeScript
 // math.ts
@@ -54,22 +56,16 @@ TEST_RUNNER.run({
 });
 ```
 
-After compiled with `tsc`, you can execute the test file via
-`node math_test.js`, which executes all test cases in this file and outputs
-success or failure of each case to console. Note that logs to console in each
-test case is ignored.
+After compiled with `tsc`, you can execute the test file via `node math_test.js`, which executes all test cases in this file and outputs success or failure of each case to console.
 
-`math_test.js` is a runnable file taking two command line arguments:
-`--set-name` or `-s`, and `--case-name` or `-c`. (`node math_test.js -h` brings
-up help menu.)
+`math_test.js` is a executable file taking two command line arguments: `--set-name` or `-s`, and `--case-name` or `-c`. (`node math_test.js -h` brings up help menu.)
 
-`node math_test.js -c UnderTen` would only execute the test case `UnderTen` and
-all logs to console are output as usual to help debug.
+`node math_test.js -c UnderTen` would only execute the test case `UnderTen`.
 
 `node math_test.js -s MathTest` would only execute the test set `MathTest` which
 is helpful in a test suite.
 
-## Test suite
+### Test suite
 
 Suppose we have 3 test files: `math_test.ts`, `handler_test.ts`,
 `element_test.ts`. The `test_suite.ts` contains the following.
@@ -81,20 +77,51 @@ import './element_test';
 // That's it!
 ```
 
-After compiled with `tsc`, you can execute it via `node test_suite.js`, which
-executes the test set in each test file and outputs success or failure of each
-case to console. It's helpful to include all tests in a project that needs to
-pass before, e.g., commiting or releasing. Also logs to console in each test
-case is ignored.
+After compiled with `tsc`, you can execute it via `node test_suite.js`, which executes all test sets in all test files and outputs success or failure of each case to console. It's helpful to include all tests in a project that needs to pass before, e.g., commiting or releasing.
 
-`test_suite.js` is a runnable file that takes `-s` and `-c`, just like
-`math_test.js`.
+`test_suite.js` is a executable file that takes `-s` and `-c`, just like `math_test.js`.
 
-`node test_suite.js -s MathTest` makes more sense in that it only executes the
-test set `MathTest`.
+`node test_suite.js -s MathTest` makes more sense in that it only executes the test set `MathTest`.
 
-`node test_suite.js -s MathTest -c UnderTen` would only execute the test case
-`UnderTen` from the test set `MathTest`.
+`node test_suite.js -s MathTest -c UnderTen` would only execute the test case `UnderTen` from the test set `MathTest`.
+
+## Test runner for Puppeteer executor environment
+
+### Puppeteer executor environment
+
+See [@selfage/bundler_cli#puppeteer-executor-environment](https://github.com/selfage/bundler_cli#puppeteer-executor-environment). TLDR, it's a headless Chrome environment but with some additional API provided by `@selfage/bundler_cli`.
+
+### Add and run tests
+
+API-wise, the only difference from above is import `PUPPETEER_TEST_RUNNER`.
+
+```TypeScript
+import { PUPPETEER_TEST_RUNNER } from "@selfage/test_runner";
+
+PUPPETEER_TEST_RUNNER.run({
+  // ...
+});
+```
+
+Then run the test file with `@selfage/bundler_cli`, e.g. `$ bundage prun math_test -- -c UnderTen`. See [@selfage/bundler_cli#run-in-puppeteer](https://github.com/selfage/bundler_cli#run-in-puppeteer) for CLI explanation.
+
+### Screenshot
+
+A common testing strategy for UI is to compare screenshots. We provide a helper method that could only work within Puppeteer executor environment. 
+
+```TypeScript
+import { screenshot } from '@selfage/test_runner/screenshot';
+
+async function main() {
+  await screenshot('/golden/test_image.png');
+  // Or add 500 ms wait time for your UI to be rendered completely.
+  // await screenshot('/golden/test_image.png', 500);
+}
+```
+
+The url path maps to a relative file path. See `@selfage/bundler_cli` for hwo to specify root directory.
+
+Unfortunately, unlike in Node environment, there is no handy way to wait for file operations in Puppeteer executor environment. `screenshot()` uses polling strategy by fetching the image until the temporary local server responds OK status.
 
 ## Stack trace from TypeScript source file
 

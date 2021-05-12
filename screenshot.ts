@@ -12,7 +12,7 @@ export async function screenshot(imagePath: string, waitMs = 0): Promise<void> {
   }
 
   // Hack to wait for full image rendering.
-  await new Promise<void>((resolve) => setTimeout(resolve, 500));
+  await new Promise<void>((resolve) => setTimeout(resolve, waitMs));
 
   console.log(SCREENSHOT + fullPath);
   while (true) {
