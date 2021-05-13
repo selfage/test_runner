@@ -1,4 +1,4 @@
-import { EXIT } from "@selfage/puppeteer_executor_api";
+import { EXIT } from "@selfage/puppeteer_executor_api/cmds";
 import { Command, ParseOptions } from "commander";
 import "@selfage/puppeteer_executor_api/argv";
 import "source-map-support/register";

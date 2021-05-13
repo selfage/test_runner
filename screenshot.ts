@@ -1,4 +1,4 @@
-import { DELETE, SCREENSHOT } from "@selfage/puppeteer_executor_api";
+import { DELETE, SCREENSHOT } from "@selfage/puppeteer_executor_api/cmds";
 
 export async function screenshot(imagePath: string, waitMs = 0): Promise<void> {
   console.log(DELETE + imagePath);
