@@ -1,11 +1,14 @@
 import { DELETE, SCREENSHOT } from "@selfage/puppeteer_executor_api/cmds";
 
 export async function screenshot(imagePath: string, waitMs = 0): Promise<void> {
-  console.log(DELETE + imagePath);
-  while (true) {
-    let response = await fetch(imagePath);
-    if (response.status === 404) {
-      break;
+  let response = await fetch(imagePath);
+  if (response.ok) {
+    console.log(DELETE + imagePath);
+    while (true) {
+      let response = await fetch(imagePath);
+      if (response.status === 404) {
+        break;
+      }
     }
   }
 
