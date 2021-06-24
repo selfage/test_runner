@@ -3,6 +3,7 @@ import { DELETE, SCREENSHOT } from "@selfage/puppeteer_executor_api/cmds";
 export async function screenshot(imagePath: string, waitMs = 0): Promise<void> {
   let response = await fetch(imagePath);
   if (response.ok) {
+    await response.blob();
     console.log(DELETE + imagePath);
     while (true) {
       let response = await fetch(imagePath);
