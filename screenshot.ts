@@ -19,6 +19,7 @@ export async function screenshot(imagePath: string, waitMs = 0): Promise<void> {
   while (true) {
     let response = await fetch(imagePath);
     if (response.ok) {
+      await response.blob();
       break;
     }
   }
