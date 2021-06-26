@@ -32,7 +32,7 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "@selfage/puppeteer_executor_api": "^1.1.0",
+    "@selfage/puppeteer_executor_api": "^1.1.1",
     "commander": "^6.2.1",
     "source-map-support": "^0.5.19"
   }
