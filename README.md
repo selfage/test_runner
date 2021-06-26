@@ -104,27 +104,7 @@ PUPPETEER_TEST_RUNNER.run({
 });
 ```
 
-Then run the test file with `@selfage/bundler_cli`, e.g. `$ bundage prun math_test -- -c UnderTen`. See [@selfage/bundler_cli#run-in-puppeteer](https://github.com/selfage/bundler_cli#run-in-puppeteer) for CLI explanation.
-
-### Screenshot
-
-A common testing strategy for UI is to compare screenshots. We provide a helper method that could only work within Puppeteer executor environment. 
-
-```TypeScript
-import { screenshot } from '@selfage/test_runner/screenshot';
-
-async function main() {
-  await screenshot('/golden/test_image.png');
-  // Or add 500 ms wait time for your UI to be rendered completely.
-  // await screenshot('/golden/test_image.png', 500);
-  // Or write to a file relative to the directory of this file.
-  // await screenshot(__dirname + (__dirname.endsWith("/") ? "" : "/") + "rendered_image.png", 500);
-}
-```
-
-The url path maps to a relative file path. See `@selfage/bundler_cli` for how to specify base directory.
-
-Unfortunately, unlike in Node environment, there is no handy way to wait for file operations in Puppeteer executor environment. `screenshot()` uses polling strategy by fetching the image until the temporary local server responds OK status.
+Then run the test file with `@selfage/bundler_cli`, e.g. `$ bundage prun math_test -- -c UnderTen`. It will close the browser/page automatically, upon all tests finished. See [@selfage/bundler_cli#run-in-puppeteer](https://github.com/selfage/bundler_cli#run-in-puppeteer) for CLI explanation. And see [@selfage/puppeteer_executor_api](https://www.npmjs.com/package/@selfage/puppeteer_executor_api) for how to control browser behavior for testing purpose, such as screenshot and set viewport.
 
 ## Stack trace from TypeScript source file
 

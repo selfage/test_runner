@@ -1,6 +1,5 @@
-import { EXIT } from "@selfage/puppeteer_executor_api/cmds";
 import { Command, ParseOptions } from "commander";
-import "@selfage/puppeteer_executor_api/argv";
+import "@selfage/puppeteer_executor_api";
 import "source-map-support/register";
 
 export interface TestCase {
@@ -55,9 +54,9 @@ export class TestRunner {
   }
 
   public static createForPuppeteer(): TestRunner {
-    return TestRunner.create(globalThis.argv, { from: "user" }, () =>
-      console.log(EXIT)
-    );
+    return TestRunner.create(globalThis.argv, { from: "user" }, () => {
+      globalThis.exit();
+    });
   }
 
   public run(testSet: TestSet): void {
