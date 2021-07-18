@@ -40,17 +40,19 @@ export class TestRunner {
 
   public static create(
     argv = process.argv,
-    options: ParseOptions = { from: "node" },
+    parseOptions: ParseOptions = { from: "node" },
     exitFn: () => void = () => {}
   ): TestRunner {
-    let command = new Command();
-    command.option("-s, --set-name <name>", "The name of the test set.");
-    command.option(
-      "-c, --case-name <name>",
-      "The name of the test case within a test set."
-    );
-    command.parse(argv, options);
-    return new TestRunner(command.setName, command.caseName, exitFn);
+    let program = new Command();
+    program
+      .option("-s, --set-name <name>", "The name of the test set.")
+      .option(
+        "-c, --case-name <name>",
+        "The name of the test case within a test set."
+      );
+    program.parse(argv, parseOptions);
+    let options = program.opts();
+    return new TestRunner(options.setName, options.caseName, exitFn);
   }
 
   public static createForPuppeteer(): TestRunner {

@@ -1,6 +1,6 @@
 {
   "name": "@selfage/test_runner",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Let each test file be executable on its own.",
   "repository": {
     "type": "git",
@@ -28,12 +28,12 @@
   ],
   "devDependencies": {
     "@selfage/tsconfig": "^1.0.6",
-    "@types/node": "^15.0.2",
+    "@types/node": "^16.3.3",
     "typescript": "^4.1.3"
   },
   "dependencies": {
     "@selfage/puppeteer_executor_api": "^1.1.1",
-    "commander": "^6.2.1",
+    "commander": "^8.0.0",
     "source-map-support": "^0.5.19"
   }
 }
