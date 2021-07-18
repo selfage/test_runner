@@ -38,9 +38,25 @@ export class TestRunner {
     private exitFn: () => void
   ) {}
 
-  public static create(
-    argv = process.argv,
-    parseOptions: ParseOptions = { from: "node" },
+  public static createForNode(): TestRunner {
+    if (!process) {
+      return undefined;
+    }
+    return TestRunner.create(process.argv, { from: "node" });
+  }
+
+  public static createForPuppeteer(): TestRunner {
+    if (!globalThis.argv) {
+      return undefined;
+    }
+    return TestRunner.create(globalThis.argv, { from: "user" }, () => {
+      globalThis.exit();
+    });
+  }
+
+  private static create(
+    argv: Array<string>,
+    parseOptions: ParseOptions,
     exitFn: () => void = () => {}
   ): TestRunner {
     let program = new Command();
@@ -53,12 +69,6 @@ export class TestRunner {
     program.parse(argv, parseOptions);
     let options = program.opts();
     return new TestRunner(options.setName, options.caseName, exitFn);
-  }
-
-  public static createForPuppeteer(): TestRunner {
-    return TestRunner.create(globalThis.argv, { from: "user" }, () => {
-      globalThis.exit();
-    });
   }
 
   public run(testSet: TestSet): void {
@@ -165,5 +175,5 @@ export class TestRunner {
   }
 }
 
-export let TEST_RUNNER = TestRunner.create();
+export let NODE_TEST_RUNNER = TestRunner.createForNode();
 export let PUPPETEER_TEST_RUNNER = TestRunner.createForPuppeteer();
