@@ -19,7 +19,7 @@ export function add(a: number, b: number): number {
 
 // math_test.ts
 import { add } from './math';
-import { TEST_RUNNER, Environment } from "@selfage/test_runner";
+import { NODE_TEST_RUNNER, Environment } from "@selfage/test_runner";
 
 class ComplicatedEnv implements Environment {
   public setUp(): Promise<void> {
@@ -30,7 +30,7 @@ class ComplicatedEnv implements Environment {
   }
 }
 
-TEST_RUNNER.run({
+NODE_TEST_RUNNER.run({
   // The name of this test set.
   name: "MathTest",
   // If you need to set up an environment for the entire test set, you can add
