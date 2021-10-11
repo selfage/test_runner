@@ -4,12 +4,14 @@ import "source-map-support/register";
 
 export interface TestCase {
   name: string;
-  execute: () => void | Promise<void>;
+  execute: (environment?: Environment) => void | Promise<void>;
+  setUp?: (environment?: Environment) => void | Promise<void>;
+  tearDown?: (environment?: Environment) => void | Promise<void>;
 }
 
 export interface Environment {
-  setUp: () => void | Promise<void>;
-  tearDown: () => void | Promise<void>;
+  setUp?: () => void | Promise<void>;
+  tearDown?: () => void | Promise<void>;
 }
 
 export interface TestSet {
@@ -133,15 +135,21 @@ export class TestRunner {
     let testCase = testSet.cases.find((testCase): boolean => {
       return caseName === testCase.name;
     });
-    if (testSet.environment) {
+    if (testSet.environment && testSet.environment.setUp) {
       await testSet.environment.setUp();
     }
+    if (testCase.setUp) {
+      await testCase.setUp(testSet.environment);
+    }
     try {
-      await testCase.execute();
+      await testCase.execute(testSet.environment);
     } catch (e) {
       console.log(e);
     }
-    if (testSet.environment) {
+    if (testCase.tearDown) {
+      await testCase.tearDown(testSet.environment);
+    }
+    if (testSet.environment && testSet.environment.tearDown) {
       await testSet.environment.tearDown();
     }
   }
@@ -160,12 +168,18 @@ export class TestRunner {
     }
     for (let testCase of testSet.cases) {
       console.log(`\x1b[33mTest case ${testCase.name} starts.\x1b[0m`);
+      if (testCase.setUp) {
+        await testCase.setUp(testSet.environment);
+      }
       try {
-        await testCase.execute();
+        await testCase.execute(testSet.environment);
         testSetResult.cases.push({ name: testCase.name, success: true });
       } catch (e) {
         console.error(e);
         testSetResult.cases.push({ name: testCase.name, success: false });
+      }
+      if (testCase.tearDown) {
+        await testCase.tearDown(testSet.environment);
       }
     }
     if (testSet.environment) {

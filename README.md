@@ -19,25 +19,11 @@ export function add(a: number, b: number): number {
 
 // math_test.ts
 import { add } from './math';
-import { NODE_TEST_RUNNER, Environment } from "@selfage/test_runner";
-
-class ComplicatedEnv implements Environment {
-  public setUp(): Promise<void> {
-    // ...
-  }
-  public tearDown(): Promise<void> {
-    // ...
-  }
-}
+import { NODE_TEST_RUNNER } from "@selfage/test_runner";
 
 NODE_TEST_RUNNER.run({
   // The name of this test set.
   name: "MathTest",
-  // If you need to set up an environment for the entire test set, you can add
-  // it like this.
-  // environment: new ComplicatedEnv(),
-  // Or define it inline.
-  // environment: { setUp: () => {...}, tearDown: () => {...} },
   cases: [
     {
       // The name of each test case.
@@ -85,6 +71,48 @@ After compiled with `tsc`, you can execute it via `node test_suite.js`, which ex
 `node test_suite.js -s MathTest` makes more sense in that it only executes the test set `MathTest`.
 
 `node test_suite.js -s MathTest -c UnderTen` would only execute the test case `UnderTen` from the test set `MathTest`.
+
+### Advanced test
+
+```TypeScript
+// flush.ts
+export async function flush(databaseConnection: any): Promise<void> {
+  await databaseConnection.write({});
+}
+
+// flush_test.ts
+import { flush } from './flush';
+import { NODE_TEST_RUNNER, Environment } from "@selfage/test_runner";
+
+NODE_TEST_RUNNER.run({
+  name: "FlushTest",
+  environment: new class implements Environment {
+    public databaseConnection: any;
+    public async setUp(): Promise<void> {
+      databaseConnection = await DatabaseConnection.establish();
+    }
+    public async tearDown(): Promise<void> {
+      await databaseConnection.dispose();
+    }
+  },
+  cases: [{
+    name: "Success",
+    setUp: async (environment) => {
+      // More setup with environment.databaseConnection.
+    },
+    execute: async (environment) => {
+      await flush(environment.databaseConnection);
+    },
+    tearDown: async (environment) => {
+      // Cleanup data especially when test failed.
+    }
+  }]
+});
+```
+
+For advanced usage, you can supply an implementation of `Environment` as well as `setUp()` and `tearDown()` for each test case.
+
+Note that all functions include `execute()` can return a `Promise` for async operators.
 
 ## Test runner for Puppeteer executor environment
 
