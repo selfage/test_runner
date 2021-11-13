@@ -114,11 +114,7 @@ For advanced usage, you can supply an implementation of `Environment` as well as
 
 Note that all functions include `execute()` can return a `Promise` for async operators.
 
-## Test runner for Puppeteer executor environment
-
-### Puppeteer executor environment
-
-See [@selfage/bundler_cli#puppeteer-executor-environment](https://github.com/selfage/bundler_cli#puppeteer-executor-environment). TLDR, it's a headless Chrome environment but with some additional API provided by `@selfage/bundler_cli`.
+## Test runner for Puppeteer test executor environment
 
 ### Add and run tests
 
@@ -133,6 +129,10 @@ PUPPETEER_TEST_RUNNER.run({
 ```
 
 Then run the test file with `@selfage/bundler_cli`, e.g. `$ bundage prun math_test -- -c UnderTen`. It will close the browser/page automatically, upon all tests finished. See [@selfage/bundler_cli#run-in-puppeteer](https://github.com/selfage/bundler_cli#run-in-puppeteer) for CLI explanation. And see [@selfage/puppeteer_executor_api](https://www.npmjs.com/package/@selfage/puppeteer_executor_api) for how to control browser behavior for testing purpose, such as screenshot and set viewport.
+
+### Puppeteer test executor environment
+
+The test file can only work properly if it's executed by [@selfage/puppeteer_test_executor](https://www.npmjs.com/package/@selfage/puppeteer_test_executor) or [@selfage/bundler_cli](https://www.npmjs.com/package/@selfage/bundler_cli). TLDR, they provide a browser environment with more powerful global functions, among which `exit()` is used by the test runner to close the page after all tests are finished.
 
 ## Stack trace from TypeScript source file
 
