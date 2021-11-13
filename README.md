@@ -116,23 +116,26 @@ Note that all functions include `execute()` can return a `Promise` for async ope
 
 ## Test runner for Puppeteer test executor environment
 
+### Puppeteer test executor environment
+
+The test file can only work properly if it's executed by [@selfage/puppeteer_test_executor](https://www.npmjs.com/package/@selfage/puppeteer_test_executor) or [@selfage/bundler_cli](https://www.npmjs.com/package/@selfage/bundler_cli). TLDR, they provide a browser context/environment with more powerful global functions, among which `exit()` is used by the test runner to close the page after all tests are finished.
+
 ### Add and run tests
 
-API-wise, the only difference from above is import `PUPPETEER_TEST_RUNNER`.
+API-wise, the only difference from above is to import `PUPPETEER_TEST_RUNNER`.
 
 ```TypeScript
 import { PUPPETEER_TEST_RUNNER } from "@selfage/test_runner";
 
 PUPPETEER_TEST_RUNNER.run({
   // ...
+  // Note this file is run in browser context with an empty HTML page.
+  // So you have to make sure that partially created DOM trees are appended to
+  // HTML body and also will be cleaned up between test cases.
 });
 ```
 
-Then run the test file with `@selfage/bundler_cli`, e.g. `$ bundage prun math_test -- -c UnderTen`. It will close the browser/page automatically, upon all tests finished. See [@selfage/bundler_cli#run-in-puppeteer](https://github.com/selfage/bundler_cli#run-in-puppeteer) for CLI explanation. And see [@selfage/puppeteer_executor_api](https://www.npmjs.com/package/@selfage/puppeteer_executor_api) for how to control browser behavior for testing purpose, such as screenshot and set viewport.
-
-### Puppeteer test executor environment
-
-The test file can only work properly if it's executed by [@selfage/puppeteer_test_executor](https://www.npmjs.com/package/@selfage/puppeteer_test_executor) or [@selfage/bundler_cli](https://www.npmjs.com/package/@selfage/bundler_cli). TLDR, they provide a browser environment with more powerful global functions, among which `exit()` is used by the test runner to close the page after all tests are finished.
+Then run the test file with `@selfage/puppeteer_test_executor`, e.g. `$ pexe math_test -- -c UnderTen`. See [@selfage/puppeteer_test_executor_api](https://www.npmjs.com/package/@selfage/puppeteer_test_executor_api) for more APIs to interact with file systems or control browser behaviors that can be used by each test case.
 
 ## Stack trace from TypeScript source file
 
