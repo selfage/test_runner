@@ -1,5 +1,5 @@
 import { Command, ParseOptions } from "commander";
-import "@selfage/puppeteer_executor_api";
+import "@selfage/puppeteer_test_executor_api";
 import "source-map-support/register";
 
 export interface TestCase {
