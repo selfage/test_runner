@@ -163,7 +163,7 @@ export class TestRunner {
       cases: new Array<TestCaseResult>(),
     };
     console.log(`\x1b[34mTest set ${testSet.name} starts.\x1b[0m`);
-    if (testSet.environment) {
+    if (testSet.environment && testSet.environment.setUp) {
       await testSet.environment.setUp();
     }
     for (let testCase of testSet.cases) {
@@ -182,7 +182,7 @@ export class TestRunner {
         await testCase.tearDown(testSet.environment);
       }
     }
-    if (testSet.environment) {
+    if (testSet.environment && testSet.environment.tearDown) {
       await testSet.environment.tearDown();
     }
     outputTestResults.push(testSetResult);
