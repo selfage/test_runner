@@ -32,7 +32,7 @@ export interface TestSetResult {
 
 export class TestRunner {
   private testResults = new Array<TestSetResult>();
-  private prevRunPromise: Promise<void>;
+  private prevRunPromise = Promise.resolve();
 
   public constructor(
     private setName: string | undefined,
@@ -40,23 +40,25 @@ export class TestRunner {
     private exitFn: () => void
   ) {}
 
-  public static createForNode(): TestRunner {
-    if (!process) {
-      return undefined;
+  public static create(): TestRunner {
+    if (process) {
+      return TestRunner.createInternal(process.argv, { from: "node" });
+    } else if (globalThis.argv) {
+      return TestRunner.createInternal(
+        globalThis.argv,
+        { from: "user" },
+        () => {
+          globalThis.exit();
+        }
+      );
+    } else {
+      throw new Error(
+        `Unsupported environment for test runner. It should be run either in Node.js, or from @selfage/puppeteer_test_executor.`
+      );
     }
-    return TestRunner.create(process.argv, { from: "node" });
   }
 
-  public static createForPuppeteer(): TestRunner {
-    if (!globalThis.argv) {
-      return undefined;
-    }
-    return TestRunner.create(globalThis.argv, { from: "user" }, () => {
-      globalThis.exit();
-    });
-  }
-
-  private static create(
+  private static createInternal(
     argv: Array<string>,
     parseOptions: ParseOptions,
     exitFn: () => void = () => {}
@@ -70,29 +72,13 @@ export class TestRunner {
       );
     program.parse(argv, parseOptions);
     let options = program.opts();
-    return new TestRunner(options.setName, options.caseName, exitFn);
-  }
-
-  public run(testSet: TestSet): void {
-    // Because we create TEST_RUNNER and PUPPETEER_TEST_RUNNER as singletons, we
-    // cannot then init the following during construction, otherwise exit
-    // function on both instances will be called.
-    if (!this.prevRunPromise) {
-      this.prevRunPromise = Promise.resolve();
-      // Because run() is designed to be called any number of times without a
-      // clear signal of when all run() has been called, we use this hack to
-      // wait for the end of the current event loop, assuming all run() calls
-      // happen synchronously.
-      setTimeout(() => this.summarizeAndExit());
-    }
-
-    this.prevRunPromise = TestRunner.runAfterPrevRun(
-      this.prevRunPromise,
-      testSet,
-      this.setName,
-      this.caseName,
-      this.testResults
-    );
+    let runner = new TestRunner(options.setName, options.caseName, exitFn);
+    // Because run() is designed to be called any number of times without a
+    // clear signal of when all run() has been called, we use this hack to
+    // wait for the end of the current event loop, assuming all run() calls
+    // happen synchronously.
+    setTimeout(() => runner.summarizeAndExit());
+    return runner;
   }
 
   private async summarizeAndExit(): Promise<void> {
@@ -110,6 +96,16 @@ export class TestRunner {
     this.exitFn();
   }
 
+  public run(testSet: TestSet): void {
+    this.prevRunPromise = TestRunner.runAfterPrevRun(
+      this.prevRunPromise,
+      testSet,
+      this.setName,
+      this.caseName,
+      this.testResults
+    );
+  }
+
   private static async runAfterPrevRun(
     prevRunPromise: Promise<void>,
     testSet: TestSet,
@@ -122,19 +118,24 @@ export class TestRunner {
       if (!caseName) {
         await TestRunner.runTestSet(testSet, outputTestResults);
       } else {
-        await TestRunner.runTestCase(testSet, caseName, outputTestResults);
+        await TestRunner.runTestCase(testSet, caseName);
       }
     }
   }
 
   private static async runTestCase(
     testSet: TestSet,
-    caseName: string,
-    outputTestResults: Array<TestSetResult>
+    caseName: string
   ): Promise<void> {
     let testCase = testSet.cases.find((testCase): boolean => {
       return caseName === testCase.name;
     });
+    if (!testCase) {
+      throw new Error(
+        `Test case ${testCase.name} not found in test set ${testSet.name}.`
+      );
+    }
+
     if (testSet.environment && testSet.environment.setUp) {
       await testSet.environment.setUp();
     }
@@ -189,5 +190,4 @@ export class TestRunner {
   }
 }
 
-export let NODE_TEST_RUNNER = TestRunner.createForNode();
-export let PUPPETEER_TEST_RUNNER = TestRunner.createForPuppeteer();
+export let TEST_RUNNER = TestRunner.create();

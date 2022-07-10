@@ -19,9 +19,9 @@ export function add(a: number, b: number): number {
 
 // math_test.ts
 import { add } from './math';
-import { NODE_TEST_RUNNER } from "@selfage/test_runner";
+import { TEST_RUNNER } from "@selfage/test_runner";
 
-NODE_TEST_RUNNER.run({
+TEST_RUNNER.run({
   // The name of this test set.
   name: "MathTest",
   cases: [
@@ -82,9 +82,9 @@ export async function flush(databaseConnection: any): Promise<void> {
 
 // flush_test.ts
 import { flush } from './flush';
-import { NODE_TEST_RUNNER, Environment } from "@selfage/test_runner";
+import { TEST_RUNNER, Environment } from "@selfage/test_runner";
 
-NODE_TEST_RUNNER.run({
+TEST_RUNNER.run({
   name: "FlushTest",
   environment: new class implements Environment {
     public databaseConnection: any;
@@ -118,16 +118,16 @@ Note that all functions include `execute()` can return a `Promise` for async ope
 
 ### Puppeteer test executor environment
 
-The test file can only work properly if it's executed by [@selfage/puppeteer_test_executor](https://www.npmjs.com/package/@selfage/puppeteer_test_executor) or [@selfage/bundler_cli](https://www.npmjs.com/package/@selfage/bundler_cli). TLDR, they provide a browser context/environment with more powerful global functions, among which `exit()` is used by the test runner to close the page after all tests are finished.
+The test file can only work properly if it's executed by [@selfage/puppeteer_test_executor](https://www.npmjs.com/package/@selfage/puppeteer_test_executor) or [@selfage/bundler_cli](https://www.npmjs.com/package/@selfage/bundler_cli). TLDR, they provide a browser context/environment with more powerful global functions, among which `exit()` is used by the test runner to close the page after all tests are finished, otherwise a page can hang on, waiting for user interactions forever.
 
 ### Add and run tests
 
-API-wise, the only difference from above is to import `PUPPETEER_TEST_RUNNER`.
+API-wise, there is literally no difference. The lib will check to create the appropriate test runner. Browser-specific functions can now be used in test bodies.
 
 ```TypeScript
-import { PUPPETEER_TEST_RUNNER } from "@selfage/test_runner";
+import { TEST_RUNNER } from "@selfage/test_runner";
 
-PUPPETEER_TEST_RUNNER.run({
+TEST_RUNNER.run({
   // ...
   // Note this file is run in browser context with an empty HTML page.
   // So you have to make sure that partially created DOM trees are appended to
