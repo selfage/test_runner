@@ -1,6 +1,6 @@
 {
   "name": "@selfage/test_runner",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Let each test file be executable on its own.",
   "repository": {
     "type": "git",

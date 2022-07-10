@@ -41,9 +41,7 @@ export class TestRunner {
   ) {}
 
   public static create(): TestRunner {
-    if (process) {
-      return TestRunner.createInternal(process.argv, { from: "node" });
-    } else if (globalThis.argv) {
+    if (globalThis.argv) {
       return TestRunner.createInternal(
         globalThis.argv,
         { from: "user" },
@@ -51,6 +49,8 @@ export class TestRunner {
           globalThis.exit();
         }
       );
+    } else if (process) {
+      return TestRunner.createInternal(process.argv, { from: "node" });
     } else {
       throw new Error(
         `Unsupported environment for test runner. It should be run either in Node.js, or from @selfage/puppeteer_test_executor.`
