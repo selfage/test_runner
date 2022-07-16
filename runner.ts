@@ -132,7 +132,7 @@ export class TestRunner {
     });
     if (!testCase) {
       throw new Error(
-        `Test case ${testCase.name} not found in test set ${testSet.name}.`
+        `Test case ${caseName} not found in test set ${testSet.name}.`
       );
     }
 
