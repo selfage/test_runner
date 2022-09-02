@@ -118,7 +118,7 @@ Note that all functions include `execute()` can return a `Promise` for async ope
 
 ### Puppeteer test executor environment
 
-The test file can only work properly if it's executed by [@selfage/puppeteer_test_executor](https://www.npmjs.com/package/@selfage/puppeteer_test_executor) or [@selfage/bundler_cli](https://www.npmjs.com/package/@selfage/bundler_cli). TLDR, they provide a browser context/environment with more powerful global functions, among which `exit()` is used by the test runner to close the page after all tests are finished, otherwise a page can hang on, waiting for user interactions forever.
+The test file can only work properly if it's executed by [@selfage/puppeteer_test_executor](https://www.npmjs.com/package/@selfage/puppeteer_test_executor) or [@selfage/bundler_cli](https://www.npmjs.com/package/@selfage/bundler_cli). TLDR, they provide a browser context/environment with more powerful global functions, among which `puppeteerExit()` is used by the test runner to close the page after all tests are finished, otherwise a page can hang on, waiting for user interactions forever.
 
 ### Add and run tests
 

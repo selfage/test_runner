@@ -41,12 +41,12 @@ export class TestRunner {
   ) {}
 
   public static create(): TestRunner {
-    if (globalThis.argv) {
+    if (globalThis.puppeteerArgv) {
       return TestRunner.createInternal(
-        globalThis.argv,
+        globalThis.puppeteerArgv,
         { from: "user" },
         () => {
-          globalThis.exit();
+          globalThis.puppeteerExit();
         }
       );
     } else if (process) {
