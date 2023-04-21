@@ -114,29 +114,6 @@ For advanced usage, you can supply an implementation of `Environment` as well as
 
 Note that all functions include `execute()` can return a `Promise` for async operators.
 
-## Test runner for Puppeteer test executor environment
-
-### Puppeteer test executor environment
-
-The test file can only work properly if it's executed by [@selfage/puppeteer_test_executor](https://www.npmjs.com/package/@selfage/puppeteer_test_executor) or [@selfage/bundler_cli](https://www.npmjs.com/package/@selfage/bundler_cli). TLDR, they provide a browser context/environment with more powerful global functions, among which `puppeteerExit()` is used by the test runner to close the page after all tests are finished, otherwise a page can hang on, waiting for user interactions forever.
-
-### Add and run tests
-
-API-wise, there is literally no difference. The lib will check to create the appropriate test runner. Browser-specific functions can now be used in test bodies.
-
-```TypeScript
-import { TEST_RUNNER } from "@selfage/test_runner";
-
-TEST_RUNNER.run({
-  // ...
-  // Note this file is run in browser context with an empty HTML page.
-  // So you have to make sure that partially created DOM trees are appended to
-  // HTML body and also will be cleaned up between test cases.
-});
-```
-
-Then run the test file with `@selfage/puppeteer_test_executor`, e.g. `$ pexe math_test -- -c UnderTen`. See [@selfage/puppeteer_test_executor_api](https://www.npmjs.com/package/@selfage/puppeteer_test_executor_api) for more APIs to interact with file systems or control browser behaviors that can be used by each test case.
-
 ## Stack trace from TypeScript source file
 
 Based on the amazing `source-map-support` package, stack traces from errors, especially when assertion failed, will be mapped back to TypeScript source files.

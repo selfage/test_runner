@@ -1,5 +1,4 @@
 import { Command, ParseOptions } from "commander";
-import "@selfage/puppeteer_test_executor_api";
 import "source-map-support/register";
 
 export interface TestCase {
@@ -40,25 +39,7 @@ export class TestRunner {
     private exitFn: () => void
   ) {}
 
-  public static create(): TestRunner {
-    if (globalThis.puppeteerArgv) {
-      return TestRunner.createInternal(
-        globalThis.puppeteerArgv,
-        { from: "user" },
-        () => {
-          globalThis.puppeteerExit();
-        }
-      );
-    } else if (process) {
-      return TestRunner.createInternal(process.argv, { from: "node" });
-    } else {
-      throw new Error(
-        `Unsupported environment for test runner. It should be run either in Node.js, or from @selfage/puppeteer_test_executor.`
-      );
-    }
-  }
-
-  private static createInternal(
+  public static create(
     argv: Array<string>,
     parseOptions: ParseOptions,
     exitFn: () => void = () => {}
@@ -118,14 +99,15 @@ export class TestRunner {
       if (!caseName) {
         await TestRunner.runTestSet(testSet, outputTestResults);
       } else {
-        await TestRunner.runTestCase(testSet, caseName);
+        await TestRunner.runTestCase(testSet, caseName, outputTestResults);
       }
     }
   }
 
   private static async runTestCase(
     testSet: TestSet,
-    caseName: string
+    caseName: string,
+    outputTestResults: Array<TestSetResult>
   ): Promise<void> {
     let testCase = testSet.cases.find((testCase): boolean => {
       return caseName === testCase.name;
@@ -142,10 +124,13 @@ export class TestRunner {
     if (testCase.setUp) {
       await testCase.setUp(testSet.environment);
     }
+    let success: boolean;
     try {
       await testCase.execute(testSet.environment);
+      success = true;
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      success = false;
     }
     if (testCase.tearDown) {
       await testCase.tearDown(testSet.environment);
@@ -153,6 +138,10 @@ export class TestRunner {
     if (testSet.environment && testSet.environment.tearDown) {
       await testSet.environment.tearDown();
     }
+    outputTestResults.push({
+      name: testSet.name,
+      cases: [{ name: caseName, success }],
+    });
   }
 
   private static async runTestSet(
@@ -190,4 +179,4 @@ export class TestRunner {
   }
 }
 
-export let TEST_RUNNER = TestRunner.create();
+export let TEST_RUNNER = TestRunner.create(process.argv, { from: "node" });

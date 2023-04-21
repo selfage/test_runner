@@ -1,6 +1,6 @@
 {
   "name": "@selfage/test_runner",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Let each test file be executable on its own.",
   "repository": {
     "type": "git",
@@ -11,10 +11,6 @@
     "Testing",
     "Runner",
     "Executable",
-    "Browser",
-    "Puppeteer",
-    "Environment",
-    "Context",
     "TypeScript"
   ],
   "author": "Yuxuan Xie <teststaybaka@gmail.com> (http://www.yuxuanxie.com)",
@@ -30,14 +26,14 @@
     "**/*.js"
   ],
   "devDependencies": {
+    "@selfage/cli": "^4.0.0",
     "@selfage/tsconfig": "^1.0.7",
     "@types/node": "^16.3.3",
     "prettier": "^2.7.1",
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "@selfage/puppeteer_test_executor_api": "^3.0.2",
     "commander": "^8.3.0",
-    "source-map-support": "^0.5.20"
+    "source-map-support": "^0.5.21"
   }
 }
