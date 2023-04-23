@@ -179,4 +179,10 @@ export class TestRunner {
   }
 }
 
-export let TEST_RUNNER = TestRunner.create(process.argv, { from: "node" });
+export let TEST_RUNNER = (function () {
+  if (process) {
+    return TestRunner.create(process.argv, { from: "node" });
+  } else {
+    return undefined;
+  }
+})();
